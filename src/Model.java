@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase encargada de manejar los datos
@@ -21,11 +22,10 @@ public class Model {
     /**
      * Busca coche segun matricula
      * @param matricula a buscar
-     * @return chche o null si no existe
+     * @return coche o null si no existe
      */
     public Coche getCoche(String matricula){
         Coche aux = null;
-        // recorre el array buscando por matricula
         for (Coche e: parking) {
             if (e.matricula.equals(matricula)) {
                 aux = e;
@@ -35,24 +35,76 @@ public class Model {
     }
 
     /**
+     * Elimina un coche del parking
+     * @param matricula del coche a eliminar
+     * @return el coche eliminado o null si no existia
+     */
+    public Coche quitarCoche(String matricula) {
+        Coche cocheEncontrado = getCoche(matricula);
+        if (cocheEncontrado != null) {
+            parking.remove(cocheEncontrado);
+            return cocheEncontrado;
+        }
+        return null;
+    }
+
+    /**
      * Cambia la velocidad de un coche
      * @param matricula
      * @param v nueva velocidad
      * @return velocidad modificada
      */
     public int cambiarVelocidad(String matricula, Integer v) {
-        // busca el coche
         getCoche(matricula).velocidad = v;
-        // retorna la nueva velocidad
         return getCoche(matricula).velocidad;
     }
 
     /**
-     * Ddevuelve la velocidad segun la matricula
+     * Hace avanzar el coche los metros indicados.
+     * Suma los metros al km del coche y descuenta la gasolina segun la velocidad.
+     * La formula es: consumo = (metros / 1000.0) * (velocidad / 100.0) * 8.0
+     * @param matricula del coche
+     * @param metros que avanza
+     * @return el coche actualizado o null si no existe
+     */
+    public Coche hacerAvanzarCoche(String matricula, Integer metros) {
+        Coche aux = getCoche(matricula);
+        if (aux != null) {
+            aux.km += metros;
+            double consumo = (metros / 1000.0) * (aux.velocidad / 100.0) * 8.0;
+            aux.gasolina = Math.max(0.0, aux.gasolina - consumo);
+        }
+        return aux;
+    }
+
+    /**
+     * Carga gasolina en el deposito del coche
+     * @param matricula del coche
+     * @param litros a añadir
+     * @return el coche con la gasolina actualizada o null si no existe
+     */
+    public Coche cargarGasolina(String matricula, double litros) {
+        Coche aux = getCoche(matricula);
+        if (aux != null) {
+            aux.gasolina += litros;
+        }
+        return aux;
+    }
+
+    /**
+     * Devuelve la velocidad segun la matricula
      * @param matricula
-     * @return
+     * @return velocidad actual
      */
     public int getVelocidad(String matricula) {
         return getCoche(matricula).velocidad;
+    }
+
+    /**
+     * Devuelve todos los coches del parking
+     * @return lista de coches
+     */
+    public List<Coche> getListaParking() {
+        return parking;
     }
 }
